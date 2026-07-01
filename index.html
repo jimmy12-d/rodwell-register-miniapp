@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rodwell Center</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #ffffff;
+    color: #333;
+  }
+  .loader {
+    text-align: center;
+  }
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #2AABEE;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  p {
+    font-size: 14px;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+
+<div class="loader">
+  <div class="spinner"></div>
+  <p>Loading your grade page...</p>
+</div>
+
+<script>
+  // ---- CONFIG: map start_param values to real Canva page URLs ----
+  const GRADE_MAP = {
+    grade78:  "https://rodwell.center/grade78",
+    grade910: "https://rodwell.center/grade910",
+    grade11:  "https://rodwell.center/grade11",
+    grade12:  "https://rodwell.center/grade12",
+  };
+  const DEFAULT_URL = GRADE_MAP.grade78;
+
+  function getStartParam() {
+    // 1. Try Telegram WebApp SDK (works when opened from a Telegram deep link)
+    try {
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        const sp = window.Telegram.WebApp.initDataUnsafe?.start_param;
+        if (sp) return sp;
+      }
+    } catch (e) {
+      // ignore, fall through
+    }
+
+    // 2. Fallback: plain query string, e.g. index.html?grade=grade910
+    const params = new URLSearchParams(window.location.search);
+    const qp = params.get("grade") || params.get("startapp");
+    if (qp) return qp;
+
+    return null;
+  }
+
+  const grade = getStartParam();
+  const target = (grade && GRADE_MAP[grade]) ? GRADE_MAP[grade] : DEFAULT_URL;
+
+  // Small delay so the spinner is visible instead of an instant flash
+  setTimeout(function () {
+    window.location.href = target;
+  }, 300);
+</script>
+
+</body>
+</html>
